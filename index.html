@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>水珠从哪里来 · 科学探究作业</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #cfe9ff 0%, #a0c4e8 100%);
+            font-family: 'Segoe UI', 'Roboto', 'PingFang SC', '微软雅黑', system-ui, sans-serif;
+            padding: 30px 20px;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* 云彩装饰 */
+        .cloud {
+            position: fixed;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 1000px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .cloud1 { width: 180px; height: 100px; top: 20px; left: -30px; }
+        .cloud1::before, .cloud1::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 50%;
+        }
+        .cloud1::before { width: 70px; height: 70px; top: -30px; left: 30px; }
+        .cloud1::after { width: 100px; height: 100px; top: -40px; left: 80px; }
+        .cloud2 { width: 220px; height: 120px; bottom: 40px; right: -20px; }
+        .cloud2::before, .cloud2::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 50%;
+        }
+        .cloud2::before { width: 90px; height: 90px; top: -35px; left: 20px; }
+        .cloud2::after { width: 120px; height: 120px; top: -45px; left: 90px; }
+        .cloud3 { width: 140px; height: 70px; top: 45%; left: 70%; }
+        .cloud3::before, .cloud3::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 50%;
+        }
+        .cloud3::before { width: 55px; height: 55px; top: -20px; left: 15px; }
+        .cloud3::after { width: 75px; height: 75px; top: -30px; left: 60px; }
+
+        /* 帐篷装饰 */
+        .tent-deco {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 130px;
+            height: 110px;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .tent-deco svg {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(2px 6px 8px rgba(0,0,0,0.1));
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(1px);
+            border-radius: 36px;
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,240,0.6);
+        }
+
+        .level-badge {
+            display: inline-block;
+            background: #2c7da0;
+            color: white;
+            border-radius: 40px;
+            padding: 6px 18px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #1f5068;
+            border-left: 7px solid #61c0a9;
+            padding-left: 18px;
+            margin: 12px 0 20px 0;
+        }
+
+        .question {
+            margin-bottom: 28px;
+            border-bottom: 1px dashed #cce3ed;
+            padding-bottom: 20px;
+        }
+
+        .q-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+            color: #1c4d6b;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .q-type {
+            background: #e2f0f5;
+            font-size: 0.7rem;
+            padding: 3px 12px;
+            border-radius: 30px;
+            font-weight: normal;
+        }
+        .options {
+            margin: 12px 0 10px 20px;
+        }
+        .checkbox-group, .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+        }
+        .checkbox-group label, .radio-group label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f4fafd;
+            padding: 6px 16px;
+            border-radius: 40px;
+            border: 1px solid #cde3ec;
+            cursor: pointer;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 28px;
+            border: 1px solid #cbdbe0;
+            font-family: inherit;
+            font-size: 0.9rem;
+            background: #fff;
+            transition: 0.2s;
+            margin-top: 8px;
+        }
+        textarea {
+            border-radius: 24px;
+            resize: vertical;
+        }
+        .btn-check {
+            background: #d9eef5;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-left: 12px;
+            font-weight: 500;
+        }
+        .feedback {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #f0f7fa;
+            color: #2c697e;
+        }
+        .correct {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .wrong {
+            background: #ffe4e2;
+            color: #b91c1c;
+        }
+        .ai-suggestion {
+            background: #e6f2ef;
+            border-left: 4px solid #2c7da0;
+            padding: 8px 12px;
+            border-radius: 16px;
+            margin-top: 8px;
+            font-size: 0.85rem;
+        }
+        .submit-area {
+            text-align: center;
+            margin: 20px 0 30px;
+        }
+        .btn-submit {
+            background: #1d7e5c;
+            border: none;
+            padding: 14px 34px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+        }
+        .btn-submit:hover {
+            background: #0f6046;
+            transform: scale(0.97);
+        }
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #2a5f6e;
+            margin-top: 20px;
+        }
+        @media (max-width: 680px) {
+            .card { padding: 18px; }
+            .section-title { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="cloud cloud1"></div>
+<div class="cloud cloud2"></div>
+<div class="cloud cloud3"></div>
+<div class="tent-deco">
+    <svg viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 80 L60 20 L110 80 Z" fill="#f2c94c" stroke="#b47c2e" stroke-width="2"/>
+        <rect x="45" y="60" width="30" height="20" fill="#f2994a" stroke="#b45a2b" stroke-width="1.5"/>
+        <path d="M60 20 L60 45" stroke="#b47c2e" stroke-width="2"/>
+        <polygon points="20,80 60,20 100,80" fill="none" stroke="#d9a13b" stroke-width="2"/>
+    </svg>
+</div>
+
+<div class="container">
+    <div style="text-align: center; margin-bottom: 15px;">
+        <h1 style="background: white; display: inline-block; padding: 10px 32px; border-radius: 60px; font-size: 1.8rem; box-shadow: 0 6px 12px rgba(0,0,0,0.1);">💧 水珠从哪里来</h1>
+        <p style="color: #1a4c64; margin-top: 12px;">科学探究 · 对比实验 · AI协作</p>
+    </div>
+
+    <!-- 基础层 -->
+    <div class="card">
+        <div class="level-badge">🌱 基础层 · 概念建构</div>
+        <div class="section-title">一、探究水珠的来源</div>
+        
+        <!-- 1-1 多选 -->
+        <div class="question" id="q1-1">
+            <div class="q-title">1-1 <span class="q-type">[多选]</span> 探究“杯口水蒸气溢出”假设，应选择的材料有？
+                <button class="btn-check" data-qid="1-1">✅ 核对答案</button>
+            </div>
+            <div class="checkbox-group" data-q="1-1">
+                <label><input type="checkbox" value="A"> A. 两个透明杯</label>
+                <label><input type="checkbox" value="B"> B. 冰水（含冰水混合物）</label>
+                <label><input type="checkbox" value="C"> C. 常温水</label>
+                <label><input type="checkbox" value="D"> D. 热水</label>
+                <label><input type="checkbox" value="E"> E. 玻璃片</label>
+                <label><input type="checkbox" value="F"> F. 色素</label>
+                <label><input type="checkbox" value="G"> G. 纸巾</label>
+            </div>
+            <div class="feedback" id="fb-1-1"></div>
+        </div>
+
+        <!-- 1-2 多选 -->
+        <div class="question" id="q1-2">
+            <div class="q-title">1-2 <span class="q-type">[多选]</span> 探究“杯内水渗出到外壁”假设，应选择的材料有？
+                <button class="btn-check" data-qid="1-2">✅ 核对答案</button>
+            </div>
+            <div class="checkbox-group" data-q="1-2">
+                <label><input type="checkbox" value="A"> A. 两个透明杯</label>
+                <label><input type="checkbox" value="B"> B. 冰水（含冰水混合物）</label>
+                <label><input type="checkbox" value="C"> C. 常温水</label>
+                <label><input type="checkbox" value="D"> D. 热水</label>
+                <label><input type="checkbox" value="E"> E. 玻璃片</label>
+                <label><input type="checkbox" value="F"> F. 色素</label>
+                <label><input type="checkbox" value="G"> G. 纸巾</label>
+            </div>
+            <div class="feedback" id="fb-1-2"></div>
+        </div>
+
+        <!-- 1-3 多选 -->
+        <div class="question" id="q1-3">
+            <div class="q-title">1-3 <span class="q-type">[多选]</span> 探究“杯外的水蒸气碰到外壁上形成”的假设，应选择的材料有？
+                <button class="btn-check" data-qid="1-3">✅ 核对答案</button>
+            </div>
+            <div class="checkbox-group" data-q="1-3">
+                <label><input type="checkbox" value="A"> A. 两个透明杯</label>
+                <label><input type="checkbox" value="B"> B. 冰水（含冰水混合物）</label>
+                <label><input type="checkbox" value="C"> C. 常温水</label>
+                <label><input type="checkbox" value="D"> D. 热水</label>
+                <label><input type="checkbox" value="E"> E. 玻璃片</label>
+                <label><input type="checkbox" value="F"> F. 色素</label>
+                <label><input type="checkbox" value="G"> G. 纸巾</label>
+            </div>
+            <div class="feedback" id="fb-1-3"></div>
+        </div>
+
+        <div class="section-title">二、探究水珠的出现与什么有关</div>
+        <!-- 2-1 单选 -->
+        <div class="question" id="q2-1">
+            <div class="q-title">2-1 <span class="q-type">[单选]</span> 帐篷内壁水珠的来源？
+                <button class="btn-check" data-qid="2-1">✅ 核对答案</button>
+            </div>
+            <div class="radio-group" data-q="2-1">
+                <label><input type="radio" name="tent" value="A"> A. 帐篷外面的水蒸气钻进来的</label>
+                <label><input type="radio" name="tent" value="B"> B. 帐篷外面的露水渗进来的</label>
+                <label><input type="radio" name="tent" value="C"> C. 帐篷里面的水蒸气碰到帐篷内壁形成的</label>
+            </div>
+            <div class="feedback" id="fb-2-1"></div>
+        </div>
+
+        <!-- 2-2 填空 -->
+        <div class="question" id="q2-2">
+            <div class="q-title">2-2 <span class="q-type">[填空]</span> 帐篷内壁水珠的形成与冰矿泉水水珠原理相同，可能与______有关。
+                <button class="btn-check" data-qid="2-2">✅ 核对答案</button>
+            </div>
+            <input type="text" class="fill-input" data-q="2-2" placeholder="">
+            <div class="feedback" id="fb-2-2"></div>
+        </div>
+
+        <!-- 2-3 简答（实验方案+现象+结论） -->
+        <div class="question" id="q2-3">
+            <div class="q-title">2-3 <span class="q-type">[实验设计]</span> 写出探究水珠形成因素的实验方案、现象及结论
+                <button class="btn-check" data-qid="2-3">🤖 AI个性化方案辅导</button>
+            </div>
+            <textarea class="essay-input" data-q="2-3-plan" rows="2" placeholder="实验方案：..."></textarea>
+            <textarea class="essay-input" data-q="2-3-phen" rows="2" placeholder="观察到的现象：..."></textarea>
+            <textarea class="essay-input" data-q="2-3-conc" rows="1" placeholder="结论：..."></textarea>
+            <div class="feedback" id="fb-2-3"></div>
+        </div>
+    </div>
+
+    <!-- 提升层 -->
+    <div class="card">
+        <div class="level-badge">✨ 提升层 · 模型建构 & 解决问题</div>
+        <div class="question" id="q3-1">
+            <div class="q-title">3-1 <span class="q-type">[AI原理图]</span> 描述你与AI对话生成的原理图（解释帐篷水珠成因）
+                <button class="btn-check" data-qid="3-1">📌 主观题提示</button>
+            </div>
+            <textarea class="essay-input" data-q="3-1" rows="3" placeholder="请描述你的原理图内容，或粘贴与AI对话截图描述..."></textarea>
+            <div class="feedback" id="fb-3-1"></div>
+        </div>
+
+        <div class="question" id="q3-2">
+            <div class="q-title">3-2 <span class="q-type">[多选+建议]</span> 避免帐篷冷凝水，小明可以怎么做？
+                <button class="btn-check" data-qid="3-2">✅ 核对答案</button>
+            </div>
+            <div class="checkbox-group" data-q="3-2">
+                <label><input type="checkbox" value="A"> A. 给帐篷通风</label>
+                <label><input type="checkbox" value="B"> B. 选择单层帐</label>
+                <label><input type="checkbox" value="C"> C. 帐篷搭配天幕使用</label>
+                <label><input type="checkbox" value="D"> D. 在帐篷内做饭</label>
+                <label><input type="checkbox" value="E_other"> E. 其他：<input type="text" id="other_suggestion" placeholder="填写建议" style="width:140px; margin-left:5px;"></label>
+            </div>
+            <div class="feedback" id="fb-3-2"></div>
+        </div>
+    </div>
+
+    <!-- 拓展层 -->
+    <div class="card">
+        <div class="level-badge">🚀 拓展层 · 迁移应用 & AI批判思维</div>
+        <div class="question" id="q4-1">
+            <div class="q-title">4-1 <span class="q-type">[简答]</span> 解释空调周围为什么会出现水珠？
+                <button class="btn-check" data-qid="4-1">✅ 核对答案</button>
+            </div>
+            <textarea class="essay-input" data-q="4-1" rows="2" placeholder="请输入原因..."></textarea>
+            <div class="feedback" id="fb-4-1"></div>
+        </div>
+
+        <div class="question" id="q4-2">
+            <div class="q-title">4-2 <span class="q-type">[AI协作]</span> 向AI提问获取至少2种解决方法，并判断
+                <button class="btn-check" data-qid="4-2">📌 主观题参考</button>
+            </div>
+            <textarea class="essay-input" data-q="4-2-sol" rows="3" placeholder="(1) AI给我的解决方案有："></textarea>
+            <textarea class="essay-input" data-q="4-2-judge" rows="3" placeholder="(2) 我的判断及原因："></textarea>
+            <div class="feedback" id="fb-4-2"></div>
+        </div>
+    </div>
+
+    <div class="submit-area">
+        <button class="btn-submit" id="finalSubmit">📤 提交作业</button>
+    </div>
+    <footer>🌿 基于真实情境·生成式AI融合 | 科学探究·对比实验·批判性思维</footer>
+</div>
+
+<script>
+    // ================= 标准答案库 =================
+    const answers = {
+        "1-1": { type: "multi", correct: ["A","B","E"], explanation: "两个透明杯形成对比，冰水提供低温环境，玻璃片可盖住杯口阻断水蒸气溢出，从而验证水珠是否来自杯内水蒸气。" },
+        "1-2": { type: "multi", correct: ["A","B","F"], explanation: "两个冰水杯，一杯加色素，观察外壁水珠颜色，若无色则说明不是杯内水渗出。" },
+        "1-3": { type: "multi", correct: ["A","B","G"], explanation: "两个透明杯形成对比，一杯放冰水、一杯放冷冻后擦干的杯子，用纸巾擦干外壁排除干扰，验证水珠来自空气中水蒸气遇冷凝结。" },
+        "2-1": { type: "single", correct: "C", explanation: "帐篷内温度较高，水蒸气遇冷帐篷内壁凝结成水珠。" },
+        "2-2": { type: "fill", correctKeywords: ["温度","温差","温度降低"], explanation: "水珠形成的关键是温度差异，水蒸气遇冷凝结。" },
+        "2-3": { type: "essay", reference: "实验方案：取三个透明杯，分别装入等量的冰水、常温水、热水，同时观察外壁水珠。现象：冰水杯外壁有水珠，常温水杯无明显水珠，热水杯内壁有水珠。结论：水蒸气遇冷凝结成小水珠，与温差有关。", explanation: "主观题，可参考示例自行批阅。" },
+        "3-1": { type: "essay", reference: "原理图应包含：帐篷内热空气含有水蒸气→遇到低温帐篷内壁→凝结成小水珠。", explanation: "主观题，重点检查是否体现遇冷凝结过程。" },
+        "3-2": { type: "multi_other", correct: ["A","C"], otherKey: "其他合理建议如选择双层帐、睡前排湿等", explanation: "通风降低湿度，天幕减少温差；单层帐更易冷凝，做饭会增加水汽。" },
+        "4-1": { type: "essay", reference: "空调制冷时，吹出的冷风使周围空气温度迅速降低，水蒸气在低温出风口表面遇冷凝结成小水珠。", explanation: "正确运用遇冷凝结原理。" },
+        "4-2": { type: "essay", reference: "至少2种方法+合理判断（如逐渐调温、开除湿模式等）", explanation: "主观题，体现AI协作与批判性思维。" }
+    };
+
+    // 辅助函数：获取多选选中的值
+    function getMultiSelected(container) {
+        let values = [];
+        container.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+            if (cb.value !== 'E_other') values.push(cb.value);
+        });
+        return values;
+    }
+
+    // 辅助函数：判断多选是否正确
+    function isMultiCorrect(selected, correctArr) {
+        if (selected.length !== correctArr.length) return false;
+        const sortedSel = [...selected].sort();
+        const sortedCorr = [...correctArr].sort();
+        return JSON.stringify(sortedSel) === JSON.stringify(sortedCorr);
+    }
+
+    // 辅助函数：获取单选选中的值
+    function getRadioSelected(container) {
+        let selected = container.querySelector('input[type="radio"]:checked');
+        return selected ? selected.value : "";
+    }
+
+    // 增强的即时反馈与个性化方案辅导（核心修改部分）
+    function enhancedFeedback(qid, questionBlock) {
+        const ansConf = answers[qid];
+        let feedbackDiv = questionBlock.querySelector('.feedback');
+        
+        // 主观题（2-3实验设计）的个性化方案辅导
+        if (qid === "2-3") {
+            const plan = questionBlock.querySelector('textarea[data-q="2-3-plan"]').value.trim();
+            const phen = questionBlock.querySelector('textarea[data-q="2-3-phen"]').value.trim();
+            const conc = questionBlock.querySelector('textarea[data-q="2-3-conc"]').value.trim();
+            
+            let suggestions = [];
+            let totalScore = 0;
+            
+            // 维度1：方案完整度（是否包含冰水、常温水、热水三种对比）
+            const hasIce = plan.includes("冰水");
+            const hasRoom = plan.includes("常温") || plan.includes("常温水");
+            const hasHot = plan.includes("热水");
+            if (hasIce && hasRoom && hasHot) {
+                suggestions.push("✅ 方案完整度：优秀！覆盖了冰水、常温水、热水三种条件对比。");
+                totalScore += 2;
+            } else {
+                let missing = [];
+                if (!hasIce) missing.push("冰水");
+                if (!hasRoom) missing.push("常温水");
+                if (!hasHot) missing.push("热水");
+                suggestions.push(`⚠️ 方案完整度：你的方案缺少【${missing.join("、")}】组。建议加入形成完整对比，才能清晰看出温度对水珠形成的影响。`);
+            }
+            
+            // 维度2：控制变量准确性
+            const hasEqual = plan.includes("等量") || plan.includes("相同") || plan.includes("同样");
+            const hasObserve = plan.includes("观察") || plan.includes("同时");
+            if (hasEqual && hasObserve) {
+                suggestions.push("✅ 控制变量：准确！注意了等量条件和同时观察，确保了实验的公平性。");
+                totalScore += 2;
+            } else {
+                if (!hasEqual) suggestions.push("⚠️ 控制变量：建议明确写出“等量”或“相同”（如等量的水、相同材质的杯子）。");
+                if (!hasObserve) suggestions.push("⚠️ 控制变量：建议写明“同时观察”，保证对比的时效性。");
+            }
+            
+            // 维度3：步骤清晰度
+            if (plan.length > 20 && (plan.includes("分别") || plan.includes("依次"))) {
+                suggestions.push("✅ 实验步骤：清晰具体，可操作性强。");
+                totalScore += 2;
+            } else {
+                suggestions.push("⚠️ 实验步骤：可以更详细一些，例如“分别装入三个透明杯”“同时观察外壁水珠情况”。");
+            }
+            
+            // 现象与结论的个性化建议
+            if (!phen.includes("冰水") && !phen.includes("水珠")) {
+                suggestions.push("📝 现象记录：建议具体描述三个杯子外壁的水珠情况，如“冰水杯外壁出现大量水珠”等。");
+            } else {
+                suggestions.push("📝 现象记录：观察比较细致，继续保持！");
+            }
+            if (!conc.includes("遇冷") && !conc.includes("温差") && !conc.includes("凝结")) {
+                suggestions.push("🧠 结论归纳：建议总结出“水蒸气遇冷凝结”或“与温差有关”的核心规律。");
+            } else {
+                suggestions.push("🧠 结论归纳：对科学规律总结准确！");
+            }
+            
+            const starScore = `${totalScore}/6⭐`;
+            feedbackDiv.innerHTML = `<div style="background:#e6f2ef; padding: 10px 14px; border-radius: 20px;">
+                                        <strong>🤖 AI个性化方案辅导</strong><br>
+                                        📊 当前方案星级：${starScore}<br>
+                                        ${suggestions.join('<br>')}<br>
+                                        💡 温馨提示：根据以上建议修改后再次提交，可以获得更高评价。
+                                      </div>`;
+            return;
+        }
+        
+        // 基础层多选/单选/填空的即时反馈（纠错不过夜）
+        if (ansConf.type === "multi") {
+            let groupDiv = questionBlock.querySelector('.checkbox-group');
+            let selected = getMultiSelected(groupDiv);
+            let isOk = isMultiCorrect(selected, ansConf.correct);
+            let missingItems = ansConf.correct.filter(item => !selected.includes(item));
+            let extraItems = selected.filter(item => !ansConf.correct.includes(item));
+            let detailMsg = "";
+            if (!isOk) {
+                if (missingItems.length) detailMsg += ` 你漏选了：${missingItems.join('、')}（${missingItems.includes('E') ? '玻璃片能阻断水蒸气溢出' : ''}${missingItems.includes('B') ? '冰水提供低温条件' : ''}${missingItems.includes('A') ? '透明杯用于对比' : ''}）。`;
+                if (extraItems.length) detailMsg += ` 你多选了：${extraItems.join('、')}（该材料在此假设中非必需）。`;
+            }
+            let userShow = selected.join('、') || "未选择";
+            let resultHtml = `<div class="${isOk ? 'correct' : 'wrong'}" style="padding: 8px 12px; border-radius: 20px;">
+                                <strong>${isOk ? '✓ 回答正确！' : '✗ 回答有误'}</strong><br>
+                                📖 解析：${ansConf.explanation}${detailMsg}<br>
+                                🎯 你的选择：${userShow}
+                              </div>`;
+            feedbackDiv.innerHTML = resultHtml;
+        } 
+        else if (ansConf.type === "single") {
+            let selected = getRadioSelected(questionBlock);
+            let isOk = (selected === ansConf.correct);
+            let resultHtml = `<div class="${isOk ? 'correct' : 'wrong'}" style="padding: 8px 12px; border-radius: 20px;">
+                                <strong>${isOk ? '✓ 正确' : '✗ 错误'}</strong><br>
+                                📖 解析：${ansConf.explanation}<br>
+                                🎯 你的选择：${selected || "未选择"}
+                              </div>`;
+            feedbackDiv.innerHTML = resultHtml;
+        }
+        else if (ansConf.type === "fill") {
+            let inputVal = questionBlock.querySelector('.fill-input').value.trim();
+            let lowVal = inputVal.toLowerCase();
+            let matched = ansConf.correctKeywords.some(kw => lowVal.includes(kw.toLowerCase()));
+            let hint = "";
+            if (!matched && inputVal) {
+                if (lowVal.includes("冷")) hint = " 你提到了“冷”，更精确的科学表述是“温度差异”或“温差”。水蒸气遇冷才会凝结，关键在于“冷热差距”。";
+                else hint = " 再想想：水珠的形成与什么变化有关？提示：冰水杯和热水杯的对比实验说明了什么？";
+            }
+            let resultHtml = `<div class="${matched ? 'correct' : 'wrong'}" style="padding: 8px 12px; border-radius: 20px;">
+                                <strong>${matched ? '✓ 正确' : '✗ 需要完善'}</strong><br>
+                                📖 解析：${ansConf.explanation}${hint}<br>
+                                🎯 你的答案：${inputVal || "（未填写）"}
+                              </div>`;
+            feedbackDiv.innerHTML = resultHtml;
+        }
+        else if (ansConf.type === "multi_other") {
+            let groupDiv = questionBlock.querySelector('.checkbox-group');
+            let selected = getMultiSelected(groupDiv);
+            let otherVal = document.getElementById('other_suggestion')?.value.trim() || "";
+            let correctBasic = ansConf.correct;
+            let basicOk = isMultiCorrect(selected.filter(v => v !== 'E_other'), correctBasic);
+            let otherOk = (otherVal.length > 0);
+            let finalOk = basicOk && (selected.includes('E_other') ? otherOk : true);
+            let detail = "";
+            if (!basicOk) detail = " 核心选项建议选择A（通风）和C（搭配天幕）。";
+            if (selected.includes('E_other') && !otherOk) detail += " 你勾选了“其他”但未填写具体建议，可以补充如“选择双层帐”等。";
+            let resultHtml = `<div class="${finalOk ? 'correct' : 'wrong'}" style="padding: 8px 12px; border-radius: 20px;">
+                                <strong>${finalOk ? '✓ 思路正确' : '✗ 可以优化'}</strong><br>
+                                📖 解析：${ansConf.explanation}${detail}<br>
+                                🎯 你的选择：${selected.join('、')} ${otherVal ? `+ 建议：${otherVal}` : ''}
+                              </div>`;
+            feedbackDiv.innerHTML = resultHtml;
+        }
+        else {
+            // 其他主观题仅显示参考
+            feedbackDiv.innerHTML = `<div style="background:#f4f1e0; padding:6px 12px; border-radius:20px;">📖 参考答案：${ansConf.reference}<br>💡 解析：${ansConf.explanation}</div>`;
+        }
+    }
+
+    // 绑定所有“核对答案”或“AI辅导”按钮
+    document.querySelectorAll('.btn-check').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const qid = btn.getAttribute('data-qid');
+            const questionBlock = btn.closest('.question');
+            if (!questionBlock) return;
+            enhancedFeedback(qid, questionBlock);
+        });
+    });
+
+    // 最终提交（完全保持原有逻辑，只增加姓名班级验证）
+    document.getElementById('finalSubmit').addEventListener('click', () => {
+        let allAnswers = {};
+        allAnswers["1-1"] = getMultiSelected(document.querySelector('#q1-1 .checkbox-group'));
+        allAnswers["1-2"] = getMultiSelected(document.querySelector('#q1-2 .checkbox-group'));
+        let q13Group = document.querySelector('#q1-3 .checkbox-group');
+        allAnswers["1-3"] = getMultiSelected(q13Group);
+        let q21Radio = document.querySelector('#q2-1 .radio-group input:checked');
+        allAnswers["2-1"] = q21Radio ? q21Radio.value : "";
+        allAnswers["2-2"] = document.querySelector('#q2-2 .fill-input').value.trim();
+        allAnswers["2-3_plan"] = document.querySelector('textarea[data-q="2-3-plan"]').value;
+        allAnswers["2-3_phen"] = document.querySelector('textarea[data-q="2-3-phen"]').value;
+        allAnswers["2-3_conc"] = document.querySelector('textarea[data-q="2-3-conc"]').value;
+        allAnswers["3-1"] = document.querySelector('textarea[data-q="3-1"]').value;
+        let q32group = document.querySelector('#q3-2 .checkbox-group');
+        let selected32 = getMultiSelected(q32group);
+        let otherText = document.getElementById('other_suggestion').value.trim();
+        allAnswers["3-2"] = { selected: selected32, other: otherText };
+        allAnswers["4-1"] = document.querySelector('textarea[data-q="4-1"]').value;
+        allAnswers["4-2_sol"] = document.querySelector('textarea[data-q="4-2-sol"]').value;
+        allAnswers["4-2_judge"] = document.querySelector('textarea[data-q="4-2-judge"]').value;
+
+        let className = prompt("请选择班级（示例：三年1班）", "三年1班");
+        let studentName = prompt("请输入姓名", "小明");
+        if (!className || !studentName) {
+            alert("班级和姓名不能为空！");
+            return;
+        }
+        
+        const postData = {
+            class: className,
+            name: studentName,
+            timestamp: new Date().toISOString(),
+            answers: allAnswers
+        };
+
+        fetch("https://quickform.cn/api/em17qf77ot", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(postData)
+        })
+        .then(response => {
+            if (response.ok) {
+                alert(`✅ ${studentName}，作业已提交成功！老师会尽快批阅。`);
+            } else {
+                alert("提交失败，请稍后重试。");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("网络错误，但作业已保存在本地，请稍后重试。");
+        });
+    });
+</script>
+</body>
+</html>
